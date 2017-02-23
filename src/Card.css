@@ -1,0 +1,19 @@
+.card {
+    margin: 10px;
+    padding: 30px;
+    font-size: 24px;
+    width:  30px;
+    display: inline-block;
+    border: 1px solid black;
+}
+
+/* this still lets you highlight the cards value */
+.face-down {
+    background-color: darkred;
+    color: darkred;
+}
+
+.face-up {
+    background-color: white;
+}
+
