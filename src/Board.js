@@ -15,49 +15,60 @@ class Board extends Component {
             return {id: i, value: c, isFaceDown: true, matched: false}
         })
         this.state = { 
-            // todo: keep a collection of Card components rather than objects
-            // then, you can don't need to manage all these IDs
-            // can I chain all these lodash calls?
             cards: _.shuffle(cardSet),
             lastFlippedCard: null,
         }
     }
 
-    handleCardClick = (index, card) => {   
-        let cardFlipped = this.state.cards[index]
-        var lastCard = this.state.lastFlippedCard
+    render() {
+        return(
+            <div className="board">
+                <div className="container">
+                    {this.renderCards(this.state.cards)}
+                </div>
+                <button onClick={this.handleResetClick}>Reset</button>
+            </div>
+        )
+    } 
 
-        if(!cardFlipped.isFaceDown) return
+    handleCardClick = (index, card) => { 
+        let cardFlipped = this.state.cards[index]
+        var lastCard = this.state.lastFlippedCard 
+
+        if(this.state.locked || !cardFlipped.isFaceDown) return
 
         cardFlipped.isFaceDown = false
-        this.forceUpdate() // todo: hrmmm...
 
-        if(lastCard != null) {
-            let isSameCard = lastCard.id === cardFlipped.id 
-            let isMatch = lastCard.value === cardFlipped.value
-            let alreadyMatchedCard = lastCard.matched || cardFlipped.alreadyMatchedCard
-
-            if(!isSameCard && !alreadyMatchedCard && isMatch) {
-                console.log("MATCH!")
-                cardFlipped.matched = true
-                this.SetMatch([cardFlipped, lastCard], true)            
-            } else {
-                console.log("NO MATCH!")
-                this.SetMatch([cardFlipped, lastCard], false)
-            } 
-        } else {
-            this.setLastFlippedCard(cardFlipped)
+        if(lastCard == null) 
+        {
+            this.setLastFlippedCard(cardFlipped)       
+            return
         }
-    }
+        
+        this.setState({ locked: true })
+            
+        let isSameCard = lastCard.id === cardFlipped.id 
+        let alreadyMatchedCard = lastCard.matched || cardFlipped.alreadyMatchedCard
+        let hasMatch = !isSameCard 
+                    && !alreadyMatchedCard 
+                    && lastCard.value === cardFlipped.value
 
-    SetMatch = (cards, isMatch) => {
+        if(hasMatch) 
+        {
+            lastCard.matched = true
+            cardFlipped.matched = true
+        }
+
         setTimeout(() => {
-            _.forEach(cards, (card) => {
-                card.isFaceDown = !isMatch
-                card.matched = isMatch
+            _.forEach([cardFlipped, lastCard], (card) => {
+                card.isFaceDown = !hasMatch
+                card.matched = hasMatch
             }) 
-            this.setLastFlippedCard(null)
-         }, 500)
+            this.setState({ 
+                locked: false, 
+                lastFlippedCard: null 
+            })
+        }, 500)
     }
 
     handleResetClick = () => {
@@ -86,18 +97,7 @@ class Board extends Component {
                 </div>
             </div>
         )
-    }
-
-    render() {
-        return(
-            <div className="board">
-                <div className="container">
-                {this.renderCards(this.state.cards)}
-                </div>
-                <button onClick={this.handleResetClick}>Reset</button>
-            </div>
-        )
-    }   
+    }  
 }
 
 Board.defaultProps = {
