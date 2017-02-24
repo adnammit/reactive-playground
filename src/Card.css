@@ -1,19 +1,41 @@
 .card {
+    position: relative;
     margin: 10px;
-    padding: 30px;
-    font-size: 24px;
-    width:  30px;
-    display: inline-block;
-    border: 1px solid black;
+    padding: 30px 40px;
+    font-size: 32px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid white;
 }
 
-/* this still lets you highlight the cards value */
+.card:before {
+  content: " ";
+  position: absolute;
+  top: 7px;
+  left: 7px;
+  right: 7px;
+  bottom: 7px;
+  border: 2px solid white;
+  border-radius: 3px;
+}
+
 .face-down {
-    background-color: darkred;
-    color: darkred;
+    background-color: lightgray;
+}
+
+.face-down p {
+    visibility: hidden;
 }
 
 .face-up {
+    border: 1px solid lightgray;
     background-color: white;
 }
+
+.face-up:before {
+  border: 1px solid lightgray;
+}
+
 

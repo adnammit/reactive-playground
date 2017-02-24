@@ -4,18 +4,21 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import Card from './Card';
+import Checkmark from './Checkmark';
 import './Board.css';
 
 class Board extends Component {
     constructor(props){
         super(props)
-        let cardsValues = ['S', 'A', 'S', 'A']
+        let values = ['⏰', '☔', '☕', '🍄']
+        let cardSet = _.map(_.flatten([values, values]), (c, i) => {
+            return {id: i, value: c, isFaceDown: true, matched: false}
+        })
         this.state = { 
             // todo: keep a collection of Card components rather than objects
             // then, you can don't need to manage all these IDs
-            cards: _.map(cardsValues, (c, i) => {
-                return {id: i, value: c, isFaceDown: true, matched: false}
-            }),
+            // can I chain all these lodash calls?
+            cards: _.shuffle(cardSet),
             lastFlippedCard: null,
         }
     }
@@ -36,6 +39,7 @@ class Board extends Component {
 
             if(!isSameCard && !alreadyMatchedCard && isMatch) {
                 console.log("MATCH!")
+                cardFlipped.matched = true
                 this.SetMatch([cardFlipped, lastCard], true)            
             } else {
                 console.log("NO MATCH!")
@@ -72,18 +76,24 @@ class Board extends Component {
 
     renderCards(cards) {
         return cards.map((card, id) => 
-            <Card key={id} 
-                  id={card.id} 
-                  isFaceDown={card.isFaceDown}
-                  value={card.value}
-                  onClick={(card) => this.handleCardClick(id, card)}/>
+            <div key={id}>
+                <Card id={card.id} 
+                    isFaceDown={card.isFaceDown}
+                    value={card.value}
+                    onClick={(card) => this.handleCardClick(id, card)}/>
+                <div className={ card.matched ? 'matched' : 'not-matched' }>
+                    <Checkmark />
+                </div>
+            </div>
         )
     }
 
     render() {
         return(
-            <div className="Board">
+            <div className="board">
+                <div className="container">
                 {this.renderCards(this.state.cards)}
+                </div>
                 <button onClick={this.handleResetClick}>Reset</button>
             </div>
         )

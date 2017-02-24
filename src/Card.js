@@ -7,7 +7,7 @@ class Card extends Component {
         return( 
             <div className={ faceDown ? 'card face-down' : 'card face-up' }
                 onClick={this.props.onClick}>
-                    {this.props.value}
+                    <p>{this.props.value}</p>
             </div>
         );
     }

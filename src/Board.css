@@ -1,7 +1,26 @@
-.Board {
-    background-color: burlywood;
+.container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 }
 
-.Board ul {
-    list-style-type: none;
+.board > button { 
+    border: 6px solid black;
+    padding: 20px 40px;
+    margin: 30px 0px;
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+    background: white;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.matched {
+    visibility: visible;
+}
+
+.not-matched {
+    visibility: hidden;
 }

@@ -1,0 +1,9 @@
+.checkmark {
+    height: 35px;
+    fill: #7ac142;
+}
+
+.checkmark .check {
+    stroke-width: 2;
+    stroke: #fff;
+}
