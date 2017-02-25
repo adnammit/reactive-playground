@@ -1,20 +1,40 @@
-.container {
+.card-container {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
 }
+.bottom-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center; 
+}
 
-.board > button { 
+/* Looks like there's a text mixin */
+.bottom-container > button { 
     border: 6px solid black;
     padding: 20px 40px;
-    margin: 30px 0px;
+    margin: 30px 30px;
     font-size: 24px;
     font-weight: bold;
     color: black;
     background: white;
     text-transform: uppercase;
     letter-spacing: 3px;
+}
+
+.bottom-container > p { 
+    font-weight: bold;
+    color: black;
+    background: white;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+}
+
+.bottom-container > p span {
+    display: block;
+    margin-top: 10px;
 }
 
 .matched {

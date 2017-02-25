@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import Card from './Card';
 import Checkmark from './Checkmark';
+import Timer from './Timer';
 import './Board.css';
 
 class Board extends Component {
@@ -17,21 +18,35 @@ class Board extends Component {
         this.state = { 
             cards: _.shuffle(cardSet),
             lastFlippedCard: null,
+            missedCount: 0,
+            isPlaying: false,
         }
     }
 
     render() {
         return(
             <div className="board">
-                <div className="container">
+                <div className="card-container">
                     {this.renderCards(this.state.cards)}
                 </div>
-                <button onClick={this.handleResetClick}>Reset</button>
+                <div className="bottom-container">
+                    <p>Missed <span>{this.state.missedCount}</span></p>
+                    <button onClick={this.handleResetClick}>Reset</button>
+                    <Timer isRunning={this.state.isPlaying}/>
+                </div>
             </div>
         )
     } 
 
+    startTimer = () => {
+        if(!this.state.isPlaying) {
+            this.setState({ isPlaying: true })
+        }
+    }
+
     handleCardClick = (index, card) => { 
+        this.startTimer()
+
         let cardFlipped = this.state.cards[index]
         var lastCard = this.state.lastFlippedCard 
 
@@ -41,7 +56,7 @@ class Board extends Component {
 
         if(lastCard == null) 
         {
-            this.setLastFlippedCard(cardFlipped)       
+            this.setState({ lastFlippedCard: cardFlipped })  
             return
         }
         
@@ -64,24 +79,35 @@ class Board extends Component {
                 card.isFaceDown = !hasMatch
                 card.matched = hasMatch
             }) 
+
+            var updatedMissedCount = hasMatch ? this.state.missedCount : this.state.missedCount + 1
+            var gameOver = this.state.cards.every(c => c.matched)
+
+            if(gameOver) {
+                
+                console.log(this.getTimer().props)
+            }
+
             this.setState({ 
                 locked: false, 
-                lastFlippedCard: null 
+                lastFlippedCard: null,
+                missedCount: updatedMissedCount,
+                isPlaying: !gameOver
             })
         }, 500)
+        
     }
-
+    
     handleResetClick = () => {
         _.forEach(this.state.cards, (card) => {
             card.isFaceDown = true
             card.matched = false
         })
-       this.setLastFlippedCard(null)
-    }
-
-    setLastFlippedCard = (card) => {
         this.setState({
-            lastFlippedCard: card 
+            locked: false, 
+            lastFlippedCard: null,
+            missedCount: 0,
+            isPlaying: false,
         })
     }
 
