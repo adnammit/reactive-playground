@@ -5,21 +5,22 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import Card from './Card';
 import Checkmark from './Checkmark';
-import Timer from './Timer';
 import './Board.css';
 
 class Board extends Component {
     constructor(props){
         super(props)
-        let values = ['⏰', '☔', '☕', '🍄']
+        let values = ['⏰', '☔']
+        //let values = ['⏰', '☔', '☕', '🍄']
         let cardSet = _.map(_.flatten([values, values]), (c, i) => {
             return {id: i, value: c, isFaceDown: true, matched: false}
         })
         this.state = { 
-            cards: _.shuffle(cardSet),
+            // cards: _.shuffle(cardSet),
+            cards: cardSet,
             lastFlippedCard: null,
             missedCount: 0,
-            isPlaying: false,
+            tick: 0
         }
     }
 
@@ -30,22 +31,31 @@ class Board extends Component {
                     {this.renderCards(this.state.cards)}
                 </div>
                 <div className="bottom-container">
-                    <p>Missed <span>{this.state.missedCount}</span></p>
-                    <button onClick={this.handleResetClick}>Reset</button>
-                    <Timer isRunning={this.state.isPlaying}/>
+                    <p>Missed <span>{ this.state.missedCount }</span></p>
+                    <button onClick={ this.handleResetClick }>Reset</button>
+                    <p><span>{ this.formatTick(this.props.tick) }</span></p>
                 </div>
             </div>
         )
     } 
 
-    startTimer = () => {
-        if(!this.state.isPlaying) {
-            this.setState({ isPlaying: true })
-        }
-    }
+    renderCards(cards) {
+        return cards.map((card, id) => 
+            <div key={id}>
+                <Card id={card.id} 
+                    isFaceDown={card.isFaceDown}
+                    value={card.value}
+                    onClick={(card) => this.handleCardClick(id, card)}/>
+                <div className={ card.matched ? 'matched' : 'not-matched' }>
+                    <Checkmark />
+                </div>
+            </div>
+        )
+    } 
 
     handleCardClick = (index, card) => { 
-        this.startTimer()
+        if(this.isTimerRunning()) 
+            this.startTimer()
 
         let cardFlipped = this.state.cards[index]
         var lastCard = this.state.lastFlippedCard 
@@ -59,7 +69,17 @@ class Board extends Component {
             this.setState({ lastFlippedCard: cardFlipped })  
             return
         }
-        
+
+        this.evaluateRound(lastCard, cardFlipped) 
+    }
+
+    startTimer = () => {
+        this.intervalId = setInterval(() => {
+            this.setState({ tick: this.state.tick + 1 })
+        }, 1000)
+    }
+
+    evaluateRound = (lastCard, cardFlipped) => {
         this.setState({ locked: true })
             
         let isSameCard = lastCard.id === cardFlipped.id 
@@ -83,22 +103,41 @@ class Board extends Component {
             var updatedMissedCount = hasMatch ? this.state.missedCount : this.state.missedCount + 1
             var gameOver = this.state.cards.every(c => c.matched)
 
-            if(gameOver) {
-                
-                console.log(this.getTimer().props)
-            }
-
             this.setState({ 
                 locked: false, 
                 lastFlippedCard: null,
-                missedCount: updatedMissedCount,
-                isPlaying: !gameOver
+                missedCount: updatedMissedCount
+            }, () => {
+                if(gameOver) {
+                    this.endGame()
+                }
             })
         }, 500)
-        
     }
-    
+
+    formatTick = () => {
+        var minute = Math.floor(this.state.tick / 60)
+        var second = this.state.tick % 60
+        return  minute + ":" + (second < 10 ? "0" + second : second)
+    }
+
+    isTimerRunning = () => {
+        return this.intervalId === undefined || this.intervalId == null
+    }
+
+    endGame = () => {
+        this.stopTimer()
+        var results = JSON.stringify({"missed": this.state.missedCount, "time": this.state.tick})
+        console.log(results)
+    }
+
+    stopTimer = () => {
+        clearInterval(this.intervalId)
+        this.intervalId = null
+    }
+
     handleResetClick = () => {
+        this.stopTimer()
         _.forEach(this.state.cards, (card) => {
             card.isFaceDown = true
             card.matched = false
@@ -107,23 +146,9 @@ class Board extends Component {
             locked: false, 
             lastFlippedCard: null,
             missedCount: 0,
-            isPlaying: false,
+            tick: 0
         })
-    }
-
-    renderCards(cards) {
-        return cards.map((card, id) => 
-            <div key={id}>
-                <Card id={card.id} 
-                    isFaceDown={card.isFaceDown}
-                    value={card.value}
-                    onClick={(card) => this.handleCardClick(id, card)}/>
-                <div className={ card.matched ? 'matched' : 'not-matched' }>
-                    <Checkmark />
-                </div>
-            </div>
-        )
-    }  
+    } 
 }
 
 Board.defaultProps = {

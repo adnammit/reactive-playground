@@ -1,8 +1,9 @@
 .card-container {
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
+    align-items: stretch;
+    margin: 30px;
 }
 .bottom-container {
     display: flex;
@@ -18,16 +19,21 @@
     margin: 30px 30px;
     font-size: 24px;
     font-weight: bold;
-    color: black;
-    background: white;
+    color: #3f3f3f;
+    background: #f5f5f5;
     text-transform: uppercase;
     letter-spacing: 3px;
+}
+
+.bottom-container > button:hover { 
+    color: #f5f5f5;
+    background: #2FB8AC;
 }
 
 .bottom-container > p { 
     font-weight: bold;
     color: black;
-    background: white;
+    background: #f5f5f5;
     text-transform: uppercase;
     letter-spacing: 3px;
 }

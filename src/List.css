@@ -1,0 +1,12 @@
+.list-container > a {
+    font-size: 27px;
+    font-weight: bold;
+    color: #262626;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-decoration: none;
+}
+
+.list-container > a:hover {
+    color: #2FB8AC;
+}
